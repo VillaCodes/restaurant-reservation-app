@@ -80,3 +80,23 @@ export function next(currentDate) {
   date.setDate(date.getDate() + 1);
   return asDateString(date);
 }
+
+//Checks to see if the reservation being booked is in the future, otherwise pushes error
+
+export function isInTheFuture(reservation_date, errors) {
+  let [ year, month, day ] = reservation_date.split("-");
+  const date = new Date(year, month, day);
+  const today = new Date();
+  if (date < today) {
+    errors.push(<li key="past"> Reservation must be in the future </li>)
+  }
+}
+
+export function isNotOnATuesday(reservation_date, errors) {
+  let [ year, month, day ] = reservation_date.split("-");
+  const date = new Date(year, month, day);
+
+  if (date.getDate() === 2) {
+    errors.push(<li key="tuesday">The Restaurant is closed on Tuesdays. Please select a different date.</li>)
+  }
+}

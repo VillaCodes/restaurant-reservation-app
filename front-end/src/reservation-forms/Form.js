@@ -12,10 +12,10 @@ export default function Form ({
         history.goBack()
     };
 
-
+    //initialFormData && as a conditional below?
     return (
-        initialFormData && (
-        <main>
+       (
+        <div>
           <h1 className="mb-3 justify-content-center">Create Reservation</h1>
           <Form onSubmit = {handleSubmit} className="mb-4">
 
@@ -134,7 +134,7 @@ export default function Form ({
             </button>
           </div>
         </Form>
-        </main>
+        </div>
         )
     )
 }

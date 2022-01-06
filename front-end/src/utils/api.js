@@ -99,4 +99,28 @@ export async function listTables(signal) {
   return await fetchJson(url, { headers, signal }, []);
 }
 
-//next below! (seated?)
+/*Retrieves a reservation.
+*@param reservation_id is the route parameter used to retrieve a matching reservation.
+*/
+export async function findReservation(reservation_id, signal) {
+  const url = new URL(`${API_BASE_URL}/${reservation_id}`);
+  return await fetchJson(url, {headers, signal}, [])
+  .then(formatReservationDate)
+  .then(formatReservationTime);
+}
+
+/*Modifies an existing reservation.
+@param reservation_id is the route param used to access the matching reservation.
+*/
+
+export async function modifyReservation(reservation_id, reservation, signal) {
+  const url = new URL(`{API_BASE_URL}/reservations/${reservation_id}`);
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: reservation }),
+    signal,
+  };
+
+  return await fetchJson(url, options, []);
+}

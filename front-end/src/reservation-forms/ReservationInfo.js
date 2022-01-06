@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
-import { isNotOnTuesday } from "../utils/date-time";
+import { isNotOnATuesday } from "../utils/date-time";
 import { isInTheFuture } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
-import ReservationForm from "./ReservationForm";
+import Form from "./Form";
 
 
 export default function ReservationInfo () {
@@ -31,7 +31,7 @@ export default function ReservationInfo () {
     };
 
     const findErrors = (date, errors) => {
-      isNotOnTuesday(date, errors);
+      isNotOnATuesday(date, errors);
       isInTheFuture(date, errors);
     };
   
@@ -57,13 +57,13 @@ export default function ReservationInfo () {
 
 
     return (
-      <>
+      <div>
         <ErrorAlert error={reservationsError} />
-        <ReservationForm
+        <Form
           initialformData={formData}
           handleFormChange={handleFormChange}
           handleSubmit={handleSubmit}
         />
-      </>
+      </div>
     );
 }
