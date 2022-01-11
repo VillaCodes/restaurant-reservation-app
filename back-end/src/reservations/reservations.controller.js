@@ -68,4 +68,5 @@ async function read (req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
+  read: [asyncErrorBoundary]
 };
