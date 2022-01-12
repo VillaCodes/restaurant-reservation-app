@@ -142,6 +142,94 @@ function duringBusinessHours(timeString) {
   return timeString >= opens && timeString <= lastHour
 }
 
+//check query params to make sure either mobile_number or date are entered before performing a search query
+
+function hasValidSearchQuery(req, res, next) {
+  const {mobile_number, date} = req.query;
+
+  if (!mobile_number && !date) {
+    return next({status: 400, message: `Please enter a valid mobile number or date`})
+  };
+
+  next();
+}
+
+
+//validate that status is correct
+
+function statusIsValid(req, res, next) {
+  const { status } = req.body.data;
+
+  const VALID_STATUSES = ["seated", "finished", "booked", "cancelled"];
+
+  if (!VALID_STATUSES.includes(status)) {
+    return next({status: 400, message: `Invalid status: ${status}`})
+  }
+
+  next();
+}
+
+//checks that reservation status is not finished before put request
+
+function statusIsNotFinished(req, res, next) {
+  const {status} = res.locals.reservation;
+
+  if (status === "finished") {
+    return next({status: 400, message: `A finished reservation can not be edited`})
+  }
+
+  next();
+}
+
+//checks that reservation status is booked before put request
+
+function statusIsBooked(req, res, next) {
+  const { status } = res.locals.reservation;
+
+  if (status !== "booked") {
+    return next({status: 400, message: `Only "booked" reservations can be edited`})
+  }
+
+  next();
+}
+
+//Validates the individual values of the request to ensure they are the right data type and adhere to rules. Uses helper functions from above.
+
+function requestValueValidator(req, res, next) {
+  const {reservation_date, reservation_time, people} = req.body.data;
+
+  if (!Number.isInteger(people) || people < 1) {
+    return next({status: 400, message: `People field must include valid integer greater than 0`})
+  }
+
+  if(!validateTime(reservation_time) || !timeFormatIsValid(reservation_time)) {
+    return next({status: 400, message: `Reservation time must be in HH:MM format`})
+  }
+
+  if(!dateFormatIsValid(reservation_date)) {
+    return next({status: 400, message: `Date must be in YYYY-MM-DD format`})
+  }
+
+  if(!dateNotInPast(reservation_date)) {
+    return next({status: 400, message: `Reservations can not be made for a past date`})
+  }
+
+  if (!duringBusinessHours(reservation_time)) {
+    return next({status: 400, message: "The reservation must be booked between 10:30 AM and 9:30 PM",});
+  }
+
+  if (!isNotOnTuesday(reservation_date)) {
+    return next({status: 400, message: "The reservation date is a Tuesday- but the restaurant is closed on Tuesdays",});
+  }
+
+  if (req.body.data?.status !== null || "booked") {
+    return next ({status: 400, message: `"finished" and "seated" are not valid statuses for this request`})
+  } 
+
+  next();
+}
+
+//validation above
 //crud below
 /**
  * List handler for reservation resources. Determines which service query to make based on query param
@@ -178,14 +266,28 @@ async function update(req, res) {
   
   service
   .update(updatedReservation)
-  .then((data) => res.json({ data }))
+  .then((data) => res.status(200).json({ data: updatedReservation }))
+  .catch(next);
+}
+
+//update a reservation's status
+
+async function updateStatus(req, res) {
+  const updatedStatus = req.body.data.status;
+
+  const {reservation_id} = res.locals.reservation;
+
+  service
+  .updateStatus(reservation_id, updateStatus)
+  .then((data) => res.status(200).json({ data : { status: updatedStatus} }))
   .catch(next);
 }
 
 
 module.exports = {
-  list: asyncErrorBoundary(list),
+  list: [hasValidSearchQuery, asyncErrorBoundary(list)],
   read: [asyncErrorBoundary(reservationExists), read],
-  create,
-  update,
+  create: [hasOnlyValidProperties, hasRequiredProperties, requestValueValidator, asyncErrorBoundary(create)],
+  update: [asyncErrorBoundary(reservationExists), hasOnlyValidProperties, hasRequiredProperties, requestValueValidator, statusIsBooked, asyncErrorBoundary(update)],
+  updateStatus: [asyncErrorBoundary(reservationExists), statusIsValid, statusIsNotFinished, asyncErrorBoundary(updateStatus)],
 };

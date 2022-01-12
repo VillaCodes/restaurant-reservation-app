@@ -43,6 +43,13 @@ async function update(updatedReservation) {
     .then((result) => result[0]);
 }
 
+// updates reservation status
+function updateStatus(reservation_id, status) {
+    return knex("reservations")
+    .where({ reservation_id })
+    .update({ status }, "*");
+}
+
 
 //not in use, but could be utilized in the future
 async function destroy(reservation_id) {
@@ -55,6 +62,7 @@ module.exports = {
     create,
     read,
     update,
+    updateStatus,
     destroy,
     searchByDate,
     searchByPhone,
