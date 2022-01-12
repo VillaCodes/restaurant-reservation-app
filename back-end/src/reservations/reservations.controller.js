@@ -27,7 +27,7 @@ const REQUIRED_FIELDS = [
   "people",
 ];
 
-//helper function to be used in validation
+//helper function to be used in validation for time values
 function validateTime(timeString) {
   const [hour, minute] = timeString.split(":");
 
@@ -124,24 +124,68 @@ function dateFormatIsValid(dateString) {
   return dateString.match(dateFormat)?.[0];
 }
 
+//makes sure reservation request is for a future date
+
+function dateNotInPast(dateString, timeString) {
+  const now = new Date();
+  // creates a date object using a string formatted as: '2021-10-08T01:21:00'
+  const reservationDate = new Date(dateString + "T" + timeString);
+  return reservationDate >= now;
+}
+
+//validate that reservation is during business hours
+
+function duringBusinessHours(timeString) {
+  const opens = "10:30";
+  const lastHour = "21:30";
+
+  return timeString >= opens && timeString <= lastHour
+}
 
 //crud below
 /**
- * List handler for reservation resources
+ * List handler for reservation resources. Determines which service query to make based on query param
  */
 async function list(req, res) {
-  const data = await service.list();
+  const {mobile_number, date} = req.query;
 
-  res.json({data});
+  const reservations = await (mobile_number
+    ? service.searchByPhone(mobile_number)
+    : service.searchByDate(date));
+
+  res.json({data: reservations});
 }
 
+//locals are set within reservationExists() validation;
 async function read (req, res) {
-  const reservation = res.locals.reservation
+  const { reservation } = res.locals;
 
-  res.json({reservation});
+  res.json({ data: reservation });
 }
+
+// Create new reservation
+async function create(req, res) {
+  const reservation = await service.create(req.body.data);
+  res.status(201).json({ data: reservation});
+}
+
+//update existing reservation
+async function update(req, res) {
+  const updatedReservation = {
+    ...req.body.data,
+    reservation_id: res.locals.reservation.reservation_id,
+  };
+  
+  service
+  .update(updatedReservation)
+  .then((data) => res.json({ data }))
+  .catch(next);
+}
+
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  read: [asyncErrorBoundary(reservationExists), read]
+  read: [asyncErrorBoundary(reservationExists), read],
+  create,
+  update,
 };
