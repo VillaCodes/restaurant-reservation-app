@@ -28,8 +28,8 @@ const REQUIRED_FIELDS = [
 ];
 
 //helper function to be used in validation
-function _validateTime(str) {
-  const [hour, minute] = str.split(":");
+function validateTime(timeString) {
+  const [hour, minute] = timeString.split(":");
 
   if (hour.length > 2 || minute.length > 2) {
     return false;
@@ -46,10 +46,10 @@ function _validateTime(str) {
 //validation below//
 
 
-//checks the valid properties array above to make sure there are no unwanted properties in the request
+//checks the valid properties arrays above to make sure there are no unwanted properties in the request
 
 function hasOnlyValidProperties(req, res, next) {
-  const {data = {}} = req.body
+  const {data = {}} = req.body;
 
   const invalidProperties = Object.keys(data).filter((property) => {
     return !VALID_PROPERTIES.includes(property)
@@ -58,6 +58,18 @@ function hasOnlyValidProperties(req, res, next) {
   if (invalidProperties) {
     return next({status: 400, message: `Invalid field(s): ${invalidStatuses.join(", ")}`})
   }
+
+  next();
+}
+
+function hasRequiredProperties(req, res, next) {
+  const {data = {}} = req.body;
+
+  REQUIRED_FIELDS.forEach((field) => {
+    if (!data[field]) {
+      return next({status: 400, message: `${field} is missing.`})
+    }
+  })
 
   next();
 }
@@ -99,6 +111,19 @@ function isNotOnTuesday(req, res, next) {
   }
   next();
 }
+
+//regular expressions for time and date formats
+const dateFormat = /^\d\d\d\d-\d\d-\d\d$/;
+const timeFormat = /^\d\d:\d\d$/;
+
+function timeFormatIsValid(timeString) {
+  return timeString.match(timeFormat)?.[0];
+}
+
+function dateFormatIsValid(dateString) {
+  return dateString.match(dateFormat)?.[0];
+}
+
 
 //crud below
 /**
