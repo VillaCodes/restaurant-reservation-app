@@ -76,7 +76,7 @@ function hasRequiredProperties(req, res, next) {
 
 //check @param reservation_id to make sure the matching res exists
 
-function reservationExists(req, res, next) {
+async function reservationExists(req, res, next) {
   const { reservation_id } = req.params;
   const reservation = await service.read(reservation_id)
 

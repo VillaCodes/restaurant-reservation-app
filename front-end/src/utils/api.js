@@ -68,6 +68,17 @@ export async function listReservations(params, signal) {
     .then(formatReservationTime);
 }
 
+//lists reservations by match of mobile number
+
+export async function listReservationsByMobile(mobile_number, signal) {
+  const url = new URL(
+    `${API_BASE_URL}/reservations?mobile_number=${mobile_number}`
+  );
+  return await fetchJson(url, { headers, signal }, [])
+    .then(formatReservationDate)
+    .then(formatReservationTime);
+}
+
 
 //Creates new reservation
 export async function createReservation(reservation, signal) {
@@ -78,8 +89,69 @@ export async function createReservation(reservation, signal) {
     body: JSON.stringify({ data: reservation }),
     signal,
   };
+  return await fetchJson(url, options);
+}
+
+/*Retrieves a reservation.
+*@param reservation_id is the route parameter used to retrieve a matching reservation.
+*/
+export async function findReservation(reservation_id, signal) {
+  const url = new URL(`${API_BASE_URL}/${reservation_id}`);
+  return await fetchJson(url, {headers, signal}, [])
+  .then(formatReservationDate)
+  .then(formatReservationTime);
+}
+
+/*Modifies an existing reservation.
+@param reservation_id is the route param used to access the matching reservation.
+*/
+
+export async function modifyReservation(reservation_id, updatedReservation, signal) {
+  const url = new URL(`{API_BASE_URL}/reservations/${reservation_id}`);
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: updatedReservation }),
+    signal,
+  };
+
   return await fetchJson(url, options, []);
 }
+
+//Assigns reservation to a table
+
+export async function seatReservation(reservation_id, table_id) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+  const options = {
+    method: "PUT",
+    body: JSON.stringify({ data: { reservation_id } }),
+    headers,
+  };
+  return await fetchJson(url, options)
+}
+
+export async function updateReservationStatus(reservation_id, updatedStatus, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/status`);
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: { status: updatedStatus } }),
+    signal,
+  };
+  return await fetchJson(url, options);
+}
+//Cancels a reservation
+export async function cancelReservation(reservation_id) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/status`);
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: { status: "cancelled" } }),
+  };
+  return await fetchJson(url, options, []);
+}
+
+//table functions below
 
 //Creates new table
 export async function createTable(table, signal) {
@@ -99,40 +171,30 @@ export async function listTables(signal) {
   return await fetchJson(url, { headers, signal }, []);
 }
 
-/*Retrieves a reservation.
-*@param reservation_id is the route parameter used to retrieve a matching reservation.
-*/
-export async function findReservation(reservation_id, signal) {
-  const url = new URL(`${API_BASE_URL}/${reservation_id}`);
-  return await fetchJson(url, {headers, signal}, [])
-  .then(formatReservationDate)
-  .then(formatReservationTime);
-}
 
-/*Modifies an existing reservation.
-@param reservation_id is the route param used to access the matching reservation.
-*/
-
-export async function modifyReservation(reservation_id, reservation, signal) {
-  const url = new URL(`{API_BASE_URL}/reservations/${reservation_id}`);
+/**
+ * Assigns a reservation_id to a table
+ */
+export async function assignToTable(reservation_id, table_id, signal) {
+  const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
   const options = {
     method: "PUT",
     headers,
-    body: JSON.stringify({ data: reservation }),
+    body: JSON.stringify({ data: { reservation_id } }),
     signal,
   };
-
-  return await fetchJson(url, options, []);
+  return await fetchJson(url, options);
 }
 
-// assigns reservation to a table
-
-export async function seatReservation(reservation_id, table_id) {
-  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+/**
+ * Removes reservation_id from a table, which changes table from "Occupied" to "Free"
+ */
+export async function finishTable(table_id, signal) {
+  const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
   const options = {
-    method: "PUT",
-    body: JSON.stringify({ data: { reservation_id } }),
+    method: "DELETE",
     headers,
+    signal,
   };
-  return await fetchJson(url, options, {});
+  return await fetchJson(url, options);
 }
