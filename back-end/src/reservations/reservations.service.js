@@ -38,6 +38,7 @@ async function create (newReservation) {
 // returns a reservation for the specified id
 async function read (reservation_id) {
     return knex("reservations")
+    .select("*")
     .where({reservation_id})
     .first();
 }

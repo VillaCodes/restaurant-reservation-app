@@ -51,11 +51,16 @@ function validateTime(timeString) {
 function hasOnlyValidProperties(req, res, next) {
   const {data = {}} = req.body;
 
+  if (!req.body.data) {
+    return next({status:400, message: `Data property required`})
+  }
+  //Validation above to check for data property. Further validation below for invalid properties.
+
   const invalidProperties = Object.keys(data).filter((property) => {
     return !VALID_PROPERTIES.includes(property)
   })
 
-  if (invalidProperties) {
+  if (invalidProperties.length) {
     return next({status: 400, message: `Invalid field(s): ${invalidProperties.join(", ")}`})
   }
 
@@ -65,9 +70,27 @@ function hasOnlyValidProperties(req, res, next) {
 function hasRequiredProperties(req, res, next) {
   const {data = {}} = req.body;
 
+  //The loop below checks each field in the request to make sure the necessary ones exist, then validates their type.
+
   REQUIRED_FIELDS.forEach((field) => {
     if (!data[field]) {
       return next({status: 400, message: `${field} is missing.`})
+    }
+
+    const reservation = req.body.data;
+
+    if (field === "people" && typeof reservation[field] !== "number") {
+      return next({status: 400, message: `${reservation[field]} is not a number type for people field.`});
+    }
+
+    if (field === "reservation_date" && !Date.parse(reservation[field])) {
+      return next({ status: 400, message: `${field} is not a valid date.` });
+    }
+
+    if (field === "reservation_time") {
+      if (!validateTime(reservation[field])) {
+        return next({ status: 400, message: `${field} is not a valid time` });
+      }
     }
   })
 
@@ -86,17 +109,8 @@ async function reservationExists(req, res, next) {
   }
   next({
     status: 404,
-    message: `Reservation ${req.params.reservation_id} does not exist.`,
+    message: `Reservation ${reservation_id} does not exist.`,
   });
-}
-
-//validate that request has data/is not null
-
-function hasData(req, res, next) {
-  if (req.body.data) {
-    return next()
-  }
-  next({status: 400, message: "Body must have data property"})
 }
 
 //make sure reservation is not on a Tuesday
@@ -202,8 +216,16 @@ function requestValueValidator(req, res, next) {
     return next({status: 400, message: `People field must include valid integer greater than 0`})
   }
 
+  if (typeof people !== "number") {
+    return next({status: 400, message: `People field must be a number`})
+  }
+
   if(!validateTime(reservation_time) || !timeFormatIsValid(reservation_time)) {
     return next({status: 400, message: `Reservation time must be in HH:MM format`})
+  }
+
+  if(!Date.parse(reservation_date)) {
+    return next({status: 400, message: `Please enter a real date`})
   }
 
   if(!dateFormatIsValid(reservation_date)) {
@@ -286,7 +308,7 @@ async function updateStatus(req, res) {
 
 module.exports = {
   list: [hasValidSearchQuery, asyncErrorBoundary(list)],
-  read: [asyncErrorBoundary(reservationExists), read],
+  read: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(read)],
   create: [hasOnlyValidProperties, hasRequiredProperties, requestValueValidator, asyncErrorBoundary(create)],
   update: [asyncErrorBoundary(reservationExists), hasOnlyValidProperties, hasRequiredProperties, requestValueValidator, statusIsBooked, asyncErrorBoundary(update)],
   updateStatus: [asyncErrorBoundary(reservationExists), statusIsValid, statusIsNotFinished, asyncErrorBoundary(updateStatus)],
