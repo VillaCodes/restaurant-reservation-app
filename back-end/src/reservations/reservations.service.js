@@ -1,5 +1,12 @@
 const knex = require("../db/connection");
 
+function list() {
+    return knex("reservations")
+      .select("*")
+      .whereNotIn("status", ["finished", "cancelled"])
+      .orderBy("reservations.reservation_date");
+  }
+
 // returns non-finished reservations for the specified date
 function searchByDate(date) {
     return knex("reservations")
@@ -66,4 +73,5 @@ module.exports = {
     destroy,
     searchByDate,
     searchByPhone,
+    list,
 }

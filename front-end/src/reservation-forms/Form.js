@@ -1,140 +1,108 @@
 import React from "react";
-import { useHistory } from "react-router"
+import { useHistory } from "react-router";
 
-export default function Form ({
-    initialFormData, 
-    handleFormChange,
-    handleSubmit
+export default function Form({
+  initialformData,
+  handleFormChange,
+  handleSubmit,
 }) {
-    const history = useHistory()
+  const history = useHistory();
 
-    const handleCancel = () => {
-        history.goBack()
-    };
+  const handleCancel = () => {
+    history.goBack();
+  };
 
-    //initialFormData && as a conditional below?
-    return (
-       (
-        <div>
-          <h1 className="mb-3 justify-content-center">Create Reservation</h1>
-          <Form onSubmit = {handleSubmit} className="mb-4">
-
-          <div className="row mb-3">
-            <div className="col-6 form-group">
-            <label className="form-label" htmlFor="first_name">
-              First Name
-            </label>
+  return (
+    initialformData && (
+      <form onSubmit={handleSubmit} className="form-group">
+        <fieldset>
+          <legend className="d-flex justify-content-center">
+            Guest Information
+          </legend>
+          <div className="pb-1">
             <input
+              type="text"
+              name="first_name"
               className="form-control"
               id="first_name"
-              name="first_name"
-              type="text"
-              value={initialFormData?.first_name}
-              placeholder={initialFormData?.first_name || "First Name"}
+              placeholder={initialformData?.first_name || "First Name"}
+              value={initialformData?.first_name}
               onChange={handleFormChange}
-              required={true}
+              required
             />
-            </div>
-          <div className="col-6">
-            <label className="form-label" htmlFor="last_name">
-              Last Name
-            </label>
+          </div>
+          <div className="pb-1">
             <input
+              type="text"
+              name="last_name"
               className="form-control"
               id="last_name"
-              name="last_name"
-              type="text"
-              value={initialFormData?.last_name}
-              placeholder={initialFormData?.last_name || "Last Name"}
+              placeholder={initialformData?.last_name || "Last Name"}
+              value={initialformData?.last_name}
               onChange={handleFormChange}
-              required={true}
+              required
             />
           </div>
-        </div>
-        
-        <div className="row mb-3">
-          <div className="col-6 form-group">
-            <label className="form-label" htmlFor="mobile_number">
-            Phone Number
-            </label>
-                <input
-                className="form-control"
-                id="mobile_number"
-                name="mobile_number"
-                type="number"
-                value={initialFormData?.mobile_number}
-                placeholder={initialFormData?.mobile_number || "Mobile Number"}
-                onChange={handleFormChange}
-                required={true}
-                />
-            </div>
-            <div className="col-6">
-            <label className="form-label" htmlFor="people">
-              Party Size
-            </label>
+          <div className="pb-1">
             <input
+              type="tel"
+              name="mobile_number"
+              className="form-control"
+              id="mobile_number"
+              placeholder={initialformData?.mobile_number || "Mobile Number"}
+              value={initialformData?.mobile_number}
+              onChange={handleFormChange}
+              required
+            />
+          </div>
+          <div className="pb-1">
+            <input
+              type="number"
+              name="people"
               className="form-control"
               id="people"
-              name="people"
-              type="number"
+              placeholder={initialformData?.people || "Number of guests"}
+              value={initialformData?.people}
+              onChange={handleFormChange}
+              required
               min="1"
-              value={initialFormData?.people}
-              placeholder={initialFormData?.people || "Number of People"}
-              onChange={handleFormChange}
-              required={true}
             />
-          </div>
           </div>
 
-          <div className="row mb-3">
-            <div className="col-6 form-group">
-            <label className="form-label" htmlFor="reservation_date">
-              Reservation Date
-            </label>
-            <input
-              className="form-control"
-              id="reservation_date"
-              name="reservation_date"
-              type="date" 
-              pattern="\d{4}-\d{2}-\d{2}"
-              value={initialFormData?.reservation_date}
-              placeholder={initialFormData?.reservation_date || "YYYY-MM-DD"}
-              onChange={handleFormChange}
-              required={true}
-            />
-            </div>
-          <div className="col-6">
-            <label className="form-label" htmlFor="reservation_time">
-              Reservation Time
-            </label>
-            <input
-              className="form-control"
-              id="reservation_time"
-              name="reservation_time"
-              type="time" 
-              pattern="[0-9]{2}:[0-9]{2}"
-              value={initialFormData?.reservation_time}
-              placeholder={initialFormData?.reservation_time || "HH:MM"}
-              onChange={handleFormChange}
-              required={true}
-            />
-          </div>
+          <input
+            type="date"
+            name="reservation_date"
+            className="form-control mb-1"
+            id="reservation_date"
+            placeholder={initialformData?.reservation_date || "YYY-MM-DD"}
+            value={initialformData?.reservation_date}
+            onChange={handleFormChange}
+            required
+          />
+          <input
+            type="time"
+            name="reservation_time"
+            className="form-control"
+            id="reservation_time"
+            placeholder={initialformData?.reservation_time || "HH:MM"}
+            value={initialformData?.reservation_time}
+            onChange={handleFormChange}
+            required
+          />
+        </fieldset>
+        <div className="d-flex justify-content-center pt-2">
+          <button type="submit" className="btn btn-primary mr-1">
+            Submit
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
         </div>
-
-        <div>
-            <button
-              type="button"
-              className="btn btn-secondary mr-2"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
-          </div>
-        </Form>
-        </div>
-        )
+      </form>
     )
+  );
 }

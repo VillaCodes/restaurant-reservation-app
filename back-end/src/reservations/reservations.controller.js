@@ -56,7 +56,7 @@ function hasOnlyValidProperties(req, res, next) {
   })
 
   if (invalidProperties) {
-    return next({status: 400, message: `Invalid field(s): ${invalidStatuses.join(", ")}`})
+    return next({status: 400, message: `Invalid field(s): ${invalidProperties.join(", ")}`})
   }
 
   next();
