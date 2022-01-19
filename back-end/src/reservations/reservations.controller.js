@@ -294,9 +294,9 @@ async function updateStatus(req, res) {
 
   const {reservation_id} = req.params;
 
-  const data = service.updateStatus(reservation_id, updatedStatus)
-
-  res.status(200).json({data})
+  const data = await service.updateStatus(reservation_id, updatedStatus)
+  console.log(data)
+  res.status(200).json({data: data})
 }
 
 
