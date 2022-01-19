@@ -27,12 +27,11 @@ function searchByDate(date) {
   }
 
 // posts new reservation and then returns it
-async function create (newReservation) {
+function create(newReservation) {
     return knex("reservations")
-    .insert(newReservation)
-    .returning("*")
-    .then((result) => result[0]);
-}
+      .insert(newReservation, "*")
+      .then((createdReservation) => createdReservation[0]);
+  }
 
 
 // returns a reservation for the specified id
