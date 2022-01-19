@@ -283,10 +283,8 @@ async function update(req, res) {
     reservation_id: res.locals.reservation.reservation_id,
   };
   
-  service
-  .update(updatedReservation)
-  .then((data) => res.status(200).json({ data: updatedReservation }))
-  .catch(next);
+  const data = await service.update(updatedReservation)
+  res.status(200).json({ data: data })
 }
 
 //update a reservation's status
@@ -294,12 +292,11 @@ async function update(req, res) {
 async function updateStatus(req, res) {
   const updatedStatus = req.body.data.status;
 
-  const {reservation_id} = res.locals.reservation;
+  const {reservation_id} = req.params;
 
-  service
-  .updateStatus(reservation_id, updateStatus)
-  .then((data) => res.status(200).json({ data : { status: updatedStatus} }))
-  .catch(next);
+  const data = service.updateStatus(reservation_id, updatedStatus)
+
+  res.status(200).json({data})
 }
 
 

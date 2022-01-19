@@ -52,9 +52,12 @@ async function update(updatedReservation) {
 
 // updates reservation status
 function updateStatus(reservation_id, status) {
-    return knex("reservations")
+  return knex("reservations")
+    .select("*")
     .where({ reservation_id })
-    .update({ status }, "*");
+    .update({ status })
+    .returning("*")
+    .then((updated) => updated[0]);
 }
 
 

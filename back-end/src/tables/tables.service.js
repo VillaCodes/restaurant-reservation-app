@@ -36,7 +36,7 @@ async function update(updatedTable, reservation_id, updatedReservationStatus) {
         .then((updatedReservations) => updatedReservations[0]);
     });
   } catch (error) {
-    // If we get here, neither the reservation nor table updates have taken place.
+    // If this runs, neither the reservation nor table updates have taken place.
     console.error(error);
   }
 }
