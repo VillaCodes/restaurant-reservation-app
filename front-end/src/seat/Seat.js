@@ -30,8 +30,8 @@ export default function Seat() {
     const c = new AbortController();
     try {
       const response = await seatReservation(
-        seatTable,
         reservation_id,
+        seatTable,
         c.signal
       );
       if (response) {
