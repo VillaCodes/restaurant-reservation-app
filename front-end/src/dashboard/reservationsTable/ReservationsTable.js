@@ -29,7 +29,11 @@ export default function ReservationTable({
     }
   }
 
-  const formatted = reservations.map((res) => {
+  const filteredReservations = reservations.filter((res) => {
+    return res.status !== "finished" && res.status !== "cancelled"
+  })
+
+  const formatted = filteredReservations.map((res) => {
     return (
       <ReservationRow
         key={res.reservation_id}

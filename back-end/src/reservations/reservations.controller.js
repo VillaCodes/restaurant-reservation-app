@@ -221,9 +221,6 @@ function requestValueValidator(req, res, next) {
     return next({status: 400, message: `People field must be a number`})
   }
 
-  if(!validateTime(reservation_time) || !timeFormatIsValid(reservation_time)) {
-    return next({status: 400, message: `Reservation time must be in HH:MM format`})
-  }
 
   if(!Date.parse(reservation_date)) {
     return next({status: 400, message: `Please enter a real date`})

@@ -106,7 +106,7 @@ export async function findReservation(reservation_id, signal) {
 */
 
 export async function modifyReservation(reservation_id, updatedReservation, signal) {
- const url = new URL(`{API_BASE_URL}/reservations/${reservation_id}`);
+ const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`);
  const options = {
    method: "PUT",
    headers,

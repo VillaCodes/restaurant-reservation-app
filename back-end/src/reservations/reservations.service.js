@@ -3,7 +3,8 @@ const knex = require("../db/connection");
 function list() {
     return knex("reservations")
       .select("*")
-      .whereNotIn("status", ["finished", "cancelled"])
+      .whereNot("status", "finished")
+      .whereNot("status", "cancelled")
       .orderBy("reservations.reservation_date");
   }
 

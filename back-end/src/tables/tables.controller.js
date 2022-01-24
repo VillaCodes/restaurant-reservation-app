@@ -69,7 +69,7 @@ function tableIsFree(req, res, next) {
   }
   next({
     status: 400,
-    message: `Table with id: ${table.table_id} is already occupied`,
+    message: `Table is occupied`,
   });
 }
 
@@ -186,7 +186,7 @@ async function update(req, res) {
   const { table, resId, resStatus } = res.locals;
   const updatedTable = { ...table };
   const data = await service.update(updatedTable, resId, resStatus);
-  res.json({ data });
+  res.status(200).json({ data: resId });
 }
 
 module.exports = {
