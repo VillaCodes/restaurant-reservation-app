@@ -14,6 +14,8 @@ export default function Edit() {
   useEffect(() => {
     async function loadReservation() {
       const abortController = new AbortController();
+      setError(null);
+      
       try {
         const reservation = await findReservation(reservation_id, abortController.signal);
         setReservationData(reservation);

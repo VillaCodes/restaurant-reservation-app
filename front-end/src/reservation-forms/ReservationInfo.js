@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { createReservation } from "../utils/api";
 import { isNotOnATuesday } from "../utils/date-time";
 import { isInTheFuture } from "../utils/date-time";

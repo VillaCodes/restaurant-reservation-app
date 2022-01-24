@@ -41,7 +41,7 @@ export default function Search() {
             name="mobile_number"
             id="mobile_number"
             onChange={changeHandler}
-            placeholder="Enter a customer's phone number"
+            placeholder="Enter a customer's phone number or a date"
             value={mobile}
             className="form-control"
             required

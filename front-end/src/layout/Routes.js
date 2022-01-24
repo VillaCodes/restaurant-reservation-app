@@ -8,6 +8,7 @@ import ReservationInfo from "../reservation-forms/ReservationInfo";
 import TableForm from "../tables/TableForm";
 import Edit from "../reservation-forms/Edit";
 import Search from "../search/Search";
+import Seat from "../seat/Seat"
 
 /**
  * Defines all the routes for the application.
@@ -23,6 +24,9 @@ function Routes() {
     <Switch>
       <Route exact={true} path="/">
         <Redirect to={"/dashboard"} />
+      </Route>
+      <Route exact path="/reservations/:reservation_id/seat">
+        <Seat />
       </Route>
       <Route exact path="/reservations/:reservation_id/edit">
         <Edit />
