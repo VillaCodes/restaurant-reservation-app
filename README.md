@@ -44,7 +44,7 @@
 
 | 3. Create two PostgreSQL databases to test and run app, one designated 'developmment', the other 'test'
 
-| 4. Open project in your code editor (i.e., VS Code) and create the appropriate .env files in the front-end and back-end folders
+| 4. Open project in your code editor (ie, VS Code) and create the appropriate .env files in the front-end and back-end folders
 
 |   a. *FRONT-END* file:
 
