@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 import { createTable } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
-export default function Tables() {
+export default function TableForm() {
   const history = useHistory();
   const initForm = { table_name: "", capacity: 0 };
   const [tableError, setTableError] = useState(null);
